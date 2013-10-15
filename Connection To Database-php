@@ -1,0 +1,65 @@
+<?php 
+
+#Ensure that the client has provided a values 
+   
+ #datbase variables		
+ $server_name ="localhost";
+ $user_name = "root";
+ $password="";
+ $database_name ="ntv";
+ 
+ #query variables
+ 
+ $fetch_query="SELECT *FROM citizen ";
+ 
+ #establishing connection
+ $con = mysql_connect($server_name, $user_name , $password);  //this is the real username and password
+
+ #checking for connection
+if (!$con)
+  {
+      die('Could not connect: ' . mysql_error());
+  }
+  #connecting to database
+  mysql_select_db( $database_name, $con);
+ 
+ 
+ #fetch
+ $result = mysql_query($fetch_query) or die(mysql_error());
+ 
+#check for empty result
+if (mysql_num_rows($result) > 0) {
+    
+    
+    $response["Programs"] = array();
+    #looping through all results
+    while ($rsinfo = mysql_fetch_array($result)) {
+        
+        $Program = array();
+		
+		
+        	 $Program["CId"] = $rsinfo["CId"];
+			  $Program["CLocation"] = $rsinfo["CLocation"];
+			   $Program["CContact"] = $rsinfo["CContact"];
+			    $Program["CDetails"] = $rsinfo["CDetails"];
+				 $Program["Date"] = $rsinfo["Date"];
+				  $Program["Time"] = $rsinfo["Time"];
+            
+        #push message into final response array
+        array_push($response["Programs"], $Program);
+    }
+    
+    #echoing JSON response
+    echo json_encode($response);
+} else {
+    #failure
+    $response["success"] = 0;
+	$response["message"] = "No Programs Available";
+    
+    #echo failure JSON
+    echo json_encode($response);
+}
+		
+		
+		
+?>
